@@ -1,11 +1,15 @@
 package it.unibo.oop.lab.streams;
 
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -74,12 +78,20 @@ public final class MusicGroupImpl implements MusicGroup {
 
     @Override
     public Optional<String> longestSong() {
-        return null;
+        return this.songs.stream()
+        .max((a, b) -> Double.compare(a.getDuration(), b.getDuration()))
+        .map(p -> p.getSongName());
     }
 
     @Override
     public Optional<String> longestAlbum() {
-        return null;
+        return this.songs.stream()
+        .filter(p -> p.getAlbumName().isPresent())
+        .collect(Collectors.groupingBy(p -> p.getAlbumName(), Collectors.summingDouble(p -> p.getDuration())))
+        .entrySet().stream()
+        .max(Comparator.comparingDouble(p -> p.getValue()))
+        .flatMap(p -> p.getKey())
+        ;
     }
 
     private static final class Song {
