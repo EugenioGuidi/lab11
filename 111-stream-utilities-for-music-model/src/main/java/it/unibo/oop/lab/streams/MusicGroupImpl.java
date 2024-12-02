@@ -43,12 +43,17 @@ public final class MusicGroupImpl implements MusicGroup {
 
     @Override
     public Stream<String> albumInYear(final int year) {
-        return null;
+        return this.albums.entrySet()
+        .stream().filter(p -> p.getValue() == year)
+        .map(p -> p.getKey());
     }
 
     @Override
     public int countSongs(final String albumName) {
-        return -1;
+        return (int) this.songs.stream()
+        .filter(p -> p.getAlbumName().isPresent())
+        .filter(p -> p.getAlbumName().get().equals(albumName))
+        .count();
     }
 
     @Override
