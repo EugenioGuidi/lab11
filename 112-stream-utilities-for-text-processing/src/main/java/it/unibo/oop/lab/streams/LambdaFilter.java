@@ -6,13 +6,16 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.LayoutManager;
 import java.awt.Toolkit;
+import java.util.Arrays;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 /**
@@ -39,8 +42,20 @@ public final class LambdaFilter extends JFrame {
          * Commands.
          */
         IDENTITY("No modifications", Function.identity()),
-        LOWERCASE("To lower case", s -> s.toLowerCase()),
-        NUMBERCHARS("Number of chars", s -> Integer.toString(s.length()));
+        TOLOWERCASE("To lower case", String::toLowerCase),
+        NUMBEROFCHARS("Number of chars", s -> Integer.toString(s.length())),
+        NUMBEROFLINES("Number of lines", s -> Long.toString(s.chars().filter(c -> c == '\n')
+                                                            .count() + 1)),
+        ALPHABETICALORDER("Alphabetical order", s -> Arrays.stream(s.split("\\s+"))
+                                                            .sorted()
+                                                            .collect(Collectors.joining(" "))),
+        COUNTOFEACHWORD("Count of each word", s -> Arrays.stream(s.split("\\s+")).sorted()
+                                                            .collect(Collectors.groupingBy(Function.identity(),
+                                                            Collectors.counting()))
+                                                            .entrySet()
+                                                            .stream()
+                                                            .map(entry -> entry.getKey() + " -> " + entry.getValue())
+                                                            .collect(Collectors.joining("\n")));
 
         private final String commandName;
         private final Function<String, String> fun;
@@ -62,7 +77,7 @@ public final class LambdaFilter extends JFrame {
 
     private LambdaFilter() {
         super("Lambda filter GUI");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         final JPanel panel1 = new JPanel();
         final LayoutManager layout = new BorderLayout();
         panel1.setLayout(layout);
@@ -70,12 +85,14 @@ public final class LambdaFilter extends JFrame {
         panel1.add(combo, BorderLayout.NORTH);
         final JPanel centralPanel = new JPanel(new GridLayout(1, 2));
         final JTextArea left = new JTextArea();
+        final JScrollPane scrollLeft = new JScrollPane(left);
         left.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         final JTextArea right = new JTextArea();
+        final JScrollPane scrollRight = new JScrollPane(right);
         right.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         right.setEditable(false);
-        centralPanel.add(left);
-        centralPanel.add(right);
+        centralPanel.add(scrollLeft);
+        centralPanel.add(scrollRight);
         panel1.add(centralPanel, BorderLayout.CENTER);
         final JButton apply = new JButton("Apply");
         apply.addActionListener(ev -> right.setText(((Command) combo.getSelectedItem()).translate(left.getText())));
