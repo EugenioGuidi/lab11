@@ -40,7 +40,7 @@ public final class LambdaFilter extends JFrame {
          */
         IDENTITY("No modifications", Function.identity()),
         LOWERCASE("To lower case", s -> s.toLowerCase()),
-        NUMBERCHARS("Number of chars", s -> String.valueOf(s.length()));
+        NUMBERCHARS("Number of chars", s -> Integer.toString(s.length()));
 
         private final String commandName;
         private final Function<String, String> fun;
