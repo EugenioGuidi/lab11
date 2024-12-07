@@ -1,14 +1,15 @@
 package it.unibo.oop.workers02;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 public final class MultiThreadedSumMatrix implements SumMatrix{
 
-    private final int nthread;
+    private final int nThread;
 
-    public MultiThreadedSumMatrix(final int nthread) {
-        this.nthread = nthread;
+    public MultiThreadedSumMatrix(final int nThread) {
+        this.nThread = nThread;
     }
 
     private static class Worker extends Thread {
@@ -42,14 +43,32 @@ public final class MultiThreadedSumMatrix implements SumMatrix{
     public double sum(double[][] matrix) {
         int nRows = matrix.length;
         int nColumn = matrix[0].length;
-        final List<Double> listOfDouble = new LinkedList<>();
+        final List<Double> listOfDouble = new ArrayList<>();
         for(int i = 0; i < nRows ; i++) {
             for(int j = 0 ; j < nColumn ; j++) {
                 listOfDouble.add(matrix[i][j]);
             }
         }
 
-        return -1;
+        final List<Worker> workers = new ArrayList<>(nThread);
+        final int size = listOfDouble.size() / nThread + listOfDouble.size() % nThread;
+        for (int start = 0; start < listOfDouble.size(); start += size) {
+            workers.add(new Worker(listOfDouble, start, size));
+        }
+        for (final Worker w: workers) {
+            w.start();
+        }
+        double sum = 0;
+        for (final Worker w: workers) {
+            try {
+                w.join();
+                sum += w.getResult();
+            } catch (InterruptedException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+
+        return sum;
     }
     
 }
