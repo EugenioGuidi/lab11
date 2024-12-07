@@ -1,13 +1,19 @@
 package it.unibo.oop.workers02;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
-public final class MultiThreadedSumMatrix implements SumMatrix{
+/**
+ * class that implement the sum of elementes of a matrix using thread.
+ */
+public final class MultiThreadedSumMatrix implements SumMatrix {
 
     private final int nThread;
 
+    /**
+     * constructor of MultiThreadedSumMatrix.
+     * @param nThread
+     */
     public MultiThreadedSumMatrix(final int nThread) {
         this.nThread = nThread;
     }
@@ -40,12 +46,12 @@ public final class MultiThreadedSumMatrix implements SumMatrix{
     }
 
     @Override
-    public double sum(double[][] matrix) {
-        int nRows = matrix.length;
-        int nColumn = matrix[0].length;
+    public double sum(final double[][] matrix) {
+        final int nRows = matrix.length;
+        final int nColumn = matrix[0].length;
         final List<Double> listOfDouble = new ArrayList<>();
-        for(int i = 0; i < nRows ; i++) {
-            for(int j = 0 ; j < nColumn ; j++) {
+        for (int i = 0; i < nRows; i++) {
+            for (int j = 0; j < nColumn; j++) {
                 listOfDouble.add(matrix[i][j]);
             }
         }
@@ -70,5 +76,4 @@ public final class MultiThreadedSumMatrix implements SumMatrix{
 
         return sum;
     }
-    
 }
