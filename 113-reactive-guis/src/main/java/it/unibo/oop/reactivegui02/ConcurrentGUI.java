@@ -2,6 +2,7 @@ package it.unibo.oop.reactivegui02;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Random;
 
 import javax.swing.JButton;
@@ -48,17 +49,42 @@ public final class ConcurrentGUI extends JFrame {
         private volatile boolean stop;
         private volatile boolean inc;
         private int count;
+        private String nextText;
+
+        public Agent() {
+            this.inc = true;
+        }
 
         @Override
         public void run() {
             while(!this.stop) {
-                Random random = new Random();
-                System.out.println(random);
+                try {
+                    nextText = Integer.toString(count);
+                    SwingUtilities.invokeAndWait(() -> ConcurrentGUI.this.display.setText(nextText));
+                    if(this.inc) {
+                        this.count++;
+                    }else {
+                        this.count--;
+                    }
+                    Thread.sleep(100);
+                } catch (InvocationTargetException | InterruptedException ex) {
+                    ex.printStackTrace();
+                }
             }
+            
+            
         }
 
         private void stopCounting() {
             this.stop = true;
+        }
+
+        private void setInc() {
+            this.inc = true;
+        }
+
+        private void setDec() {
+            this.inc = false;
         }
         
     }
