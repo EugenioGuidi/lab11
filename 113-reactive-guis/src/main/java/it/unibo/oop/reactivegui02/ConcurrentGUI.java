@@ -3,7 +3,6 @@ package it.unibo.oop.reactivegui02;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Random;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -17,6 +16,7 @@ import javax.swing.SwingUtilities;
 @SuppressWarnings("PMD.AvoidPrintStackTrace")
 public final class ConcurrentGUI extends JFrame {
 
+    private static final long serialVersionUID = 2L;
     private static final double WIDTH_PERC = 0.2;
     private static final double HEIGHT_PERC = 0.1;
 
@@ -24,6 +24,10 @@ public final class ConcurrentGUI extends JFrame {
     private final JButton up = new JButton("up");
     private final JButton down = new JButton("down");
     private final JButton stop = new JButton("stop");
+
+    /**
+     * Builds a new CGUI.
+     */
 
     public ConcurrentGUI() {
         super();
@@ -46,26 +50,26 @@ public final class ConcurrentGUI extends JFrame {
         stop.addActionListener((e) -> agent.stopCounting());
     }
 
-    private class Agent implements Runnable {
+    private final class Agent implements Runnable {
 
         private volatile boolean stop;
         private volatile boolean inc;
         private int count;
         private String nextText;
 
-        public Agent() {
+        Agent() {
             this.inc = true;
         }
 
         @Override
         public void run() {
-            while(!this.stop) {
+            while (!this.stop) {
                 try {
                     nextText = Integer.toString(count);
                     SwingUtilities.invokeAndWait(() -> ConcurrentGUI.this.display.setText(nextText));
-                    if(this.inc) {
+                    if (this.inc) {
                         this.count++;
-                    }else {
+                    } else {
                         this.count--;
                     }
                     Thread.sleep(100);
@@ -86,6 +90,5 @@ public final class ConcurrentGUI extends JFrame {
         private void setDec() {
             this.inc = false;
         }
-        
     }
 }
