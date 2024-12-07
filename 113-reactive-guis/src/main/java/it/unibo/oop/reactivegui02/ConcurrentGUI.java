@@ -25,6 +25,15 @@ public final class ConcurrentGUI extends JFrame {
     private final JButton down = new JButton("down");
     private final JButton stop = new JButton("stop");
 
+    private final transient Agent agent;
+
+    /**
+     * defencive method to stop agent.
+     */
+    public void stopAgent() {
+        this.agent.stopCounting();
+    }
+
     /**
      * Builds a new CGUI.
      */
@@ -42,7 +51,7 @@ public final class ConcurrentGUI extends JFrame {
         this.getContentPane().add(panel);
         this.setVisible(true);
 
-        final Agent agent = new Agent();
+        this.agent = new Agent();
         new Thread(agent).start();
 
         up.addActionListener((e) -> agent.setInc());
@@ -50,7 +59,11 @@ public final class ConcurrentGUI extends JFrame {
         stop.addActionListener((e) -> agent.stopCounting());
     }
 
-    private final class Agent implements Runnable {
+    /**
+     * creation of an agent the count incrementing or decrementing filed count and printing that
+     * on GUI.
+     */
+    public final class Agent implements Runnable {
 
         private volatile boolean stop;
         private volatile boolean inc;
@@ -79,7 +92,10 @@ public final class ConcurrentGUI extends JFrame {
             }
         }
 
-        private void stopCounting() {
+        /**
+         * set field stop to true to stop the count.
+         */
+        public void stopCounting() {
             this.stop = true;
         }
 
